@@ -32,6 +32,8 @@ namespace RasterAlgorithms
             {
                 currentColorFill = colorDialog.Color;
             }
+
+            canvas.Image = RasterAlgorithms.Properties.Resources.back;
         }
 
         private void buttonFillImage_Click(object sender, EventArgs e)

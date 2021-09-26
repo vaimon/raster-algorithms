@@ -49,10 +49,11 @@ namespace RasterAlgorithms
             // 
             // canvas
             // 
-            this.canvas.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.canvas.Location = new System.Drawing.Point(0, 60);
+            this.canvas.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.canvas.Location = new System.Drawing.Point(0, 0);
             this.canvas.Name = "canvas";
-            this.canvas.Size = new System.Drawing.Size(1300, 840);
+            this.canvas.Size = new System.Drawing.Size(1300, 900);
             this.canvas.TabIndex = 0;
             this.canvas.TabStop = false;
             // 
@@ -131,7 +132,7 @@ namespace RasterAlgorithms
             // color1
             // 
             this.color1.BackColor = System.Drawing.Color.Red;
-            this.color1.Location = new System.Drawing.Point(979, 92);
+            this.color1.Location = new System.Drawing.Point(983, 92);
             this.color1.Name = "color1";
             this.color1.Size = new System.Drawing.Size(33, 33);
             this.color1.TabIndex = 3;
@@ -142,7 +143,7 @@ namespace RasterAlgorithms
             // color2
             // 
             this.color2.BackColor = System.Drawing.Color.Green;
-            this.color2.Location = new System.Drawing.Point(1018, 92);
+            this.color2.Location = new System.Drawing.Point(1022, 92);
             this.color2.Name = "color2";
             this.color2.Size = new System.Drawing.Size(33, 33);
             this.color2.TabIndex = 3;
@@ -153,7 +154,7 @@ namespace RasterAlgorithms
             // color3
             // 
             this.color3.BackColor = System.Drawing.Color.Blue;
-            this.color3.Location = new System.Drawing.Point(1057, 92);
+            this.color3.Location = new System.Drawing.Point(1061, 92);
             this.color3.Name = "color3";
             this.color3.Size = new System.Drawing.Size(33, 33);
             this.color3.TabIndex = 3;

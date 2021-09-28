@@ -141,18 +141,25 @@ namespace RasterAlgorithms
             List<Color> res = new List<Color>();
             var hstart = RGBtoHSV(start.R, start.G, start.B);
             var hend = RGBtoHSV(end.R, end.G, end.B);
-            if ((hstart.hue == 0) && (hend.hue > (360 - hend.hue)))
-            {
-                hstart.hue = 360;
-            }
-            if ((hend.hue == 0) && (hstart.hue > (360 - hstart.hue)))
-            {
-                hend.hue = 360;
-            }
             double hstep = (hend.hue - hstart.hue) / (seed - 1), sstep = (hend.saturation - hstart.saturation) / (seed - 1), vstep = (hend.value - hstart.value) / (seed - 1);
+            /* if (hend.hue > hstart.hue)
+             {
+                 if (360 - hend.hue + hstart.hue < Math.Abs(hend.hue - hstart.hue))
+                 {
+                     hstep = -(360 - hend.hue + hstart.hue) / (seed - 1);
+                 }
+             }
+             else
+             {
+                 if (360 - hstart.hue + hend.hue < Math.Abs(hend.hue - hstart.hue))
+                 {
+                     hstep = (360 - hstart.hue + hend.hue) / (seed - 1);
+                 }
+             }*/
+
             for (int i = 0; i < seed; i++)
             {
-                res.Add(HSVtoRGB(hstart.hue + hstep * i, hstart.saturation + sstep * i, hstart.value + vstep * i));
+                res.Add(HSVtoRGB((360 + hstart.hue + hstep * i) % 360, hstart.saturation + sstep * i, hstart.value + vstep * i));
             }
             return res.ToArray();
         }

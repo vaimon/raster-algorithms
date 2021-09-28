@@ -367,6 +367,7 @@ namespace RasterAlgorithms
         {
             vertices = vertices.OrderBy(x => x.Item1.Y).ToList();
             var bitmap = new Bitmap(canvas.Image);
+           
             using (FastBitmap fbitmap = new FastBitmap(bitmap))
             {
                 var e1 = getLineCoordsByBresenham(vertices[0].Item1, vertices[1].Item1).GroupBy(p => p.Y).Select(g => (vertices[0].Item1.X > vertices[1].Item1.X ? g.First() : g.Last())).ToArray();
@@ -376,6 +377,30 @@ namespace RasterAlgorithms
                 var c1 = HSVTools.interpolate(vertices[0].Item2, vertices[1].Item2, e1.Length);
                 var c2 = HSVTools.interpolate(vertices[0].Item2, vertices[2].Item2, e2.Length);
                 var c3 = HSVTools.interpolate(vertices[1].Item2, vertices[2].Item2, e3.Length);
+
+                /*
+                for (int i = 0; i < c1.Length; i++)
+                {
+                    for(int j = 0; j < 7; j++)
+                    {
+                        fbitmap.SetPixel(new Point(100 + j, 200 + i), c1[i]);
+                    }
+                }
+                for (int i = 0; i < c2.Length; i++)
+                {
+                    for (int j = 0; j < 7; j++)
+                    {
+                        fbitmap.SetPixel(new Point(110 + j, 200 + i), c2[i]);
+                    }
+                }
+
+                for (int i = 0; i < c3.Length; i++)
+                {
+                    for (int j = 0; j < 7; j++)
+                    {
+                        fbitmap.SetPixel(new Point(120 + j, 200 + i), c3[i]);
+                    }
+                }*/
 
                 for (int i = 0; i < e1.Length; i++)
                 {

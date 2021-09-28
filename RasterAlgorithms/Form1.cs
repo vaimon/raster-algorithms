@@ -15,15 +15,13 @@ namespace RasterAlgorithms
     {
         String currentFileName;
         Color currentColorFill;
-        Color currentColorTr1;
-        Color currentColorTr2;
-        Color currentColorTr3;
         bool isVu = false;
         bool isDrawingMode = false;
         Bitmap bcanvas;
 
         public Form1()
         {
+            var x = HSVTools.interpolate(Color.Red, Color.Blue, 10);
             InitializeComponent();
         }
 
@@ -50,6 +48,7 @@ namespace RasterAlgorithms
             changeVisibility(false, false);
             isDrawingMode = false;
             isTriangleMode = false;
+            isLineMode = false;
             /// Выбираем цвет
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
@@ -68,6 +67,7 @@ namespace RasterAlgorithms
         {
             changeVisibility(false, false);
             isTriangleMode = false;
+            isLineMode = false;
             canvas.Image = new Bitmap(1300, 900);
             /// Выбираем файл для заливки
             if (chooseFileDialog.ShowDialog() == DialogResult.OK)
@@ -129,6 +129,7 @@ namespace RasterAlgorithms
             changeVisibility(false, false);
             isDrawingMode = false;
             isTriangleMode = false;
+            isLineMode = false;
             canvas.Image = new Bitmap(1300, 900);
 
             if (chooseFileDialog.ShowDialog() == DialogResult.OK)
@@ -137,6 +138,8 @@ namespace RasterAlgorithms
             }
         }
 
+        private bool isLineMode = false;
+        private Point? prevPoint = null;
         /// <summary>
         /// 
         /// </summary>
@@ -151,6 +154,7 @@ namespace RasterAlgorithms
             canvas.Image = new Bitmap(1300, 900);
             /// Алгоритм по умолчанию
             comboBoxLine.SelectedIndex = 0;
+            isLineMode = true;
         }
         /// <summary>
         /// Выбираем алгоритм
@@ -175,10 +179,11 @@ namespace RasterAlgorithms
         {
             changeVisibility(false, true);
             isDrawingMode = false;
+            isLineMode = false;
             canvas.Image = new Bitmap(1300, 900);
-            color1.BackColor = currentColorTr1 = Color.Red;
-            color2.BackColor = currentColorTr2 = Color.Green;
-            color3.BackColor = currentColorTr3 = Color.Blue;
+            color1.BackColor = Color.Red;
+            color2.BackColor = Color.FromArgb(0,255,0);
+            color3.BackColor = Color.Blue;
             vertices = new List<Tuple<Point, Color>>();
             isTriangleMode = true;
         }
@@ -187,7 +192,7 @@ namespace RasterAlgorithms
         {
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                color1.BackColor = currentColorTr1 = colorDialog.Color;
+                color1.BackColor = colorDialog.Color;
             }
         }
 
@@ -195,7 +200,7 @@ namespace RasterAlgorithms
         {
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                color2.BackColor = currentColorTr2 = colorDialog.Color;
+                color2.BackColor = colorDialog.Color;
             }
         }
 
@@ -203,30 +208,68 @@ namespace RasterAlgorithms
         {
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                color3.BackColor = currentColorTr3 = colorDialog.Color;
+                color3.BackColor = colorDialog.Color;
             }
         }
 
         private void canvas_MouseClick(object sender, MouseEventArgs e)
         {
-            if (!isTriangleMode)
+            if (isTriangleMode)
             {
-                return;
-            }
-            if(vertices.Count == 0)
-            {
-                vertices.Add(Tuple.Create(e.Location,currentColorTr1));
-                
-            } else if (vertices.Count == 1)
-            {
-                vertices.Add(Tuple.Create(e.Location, currentColorTr2));
+                if (vertices.Count == 0)
+                {
+                    vertices.Add(Tuple.Create(e.Location, color1.BackColor));
 
-            } else if (vertices.Count == 2)
+                }
+                else if (vertices.Count == 1)
+                {
+                    vertices.Add(Tuple.Create(e.Location, color2.BackColor));
+
+                }
+                else if (vertices.Count == 2)
+                {
+                    vertices.Add(Tuple.Create(e.Location, color3.BackColor));
+                    drawTriangle();
+                    vertices.Clear();
+                }
+            } else if (isLineMode)
             {
-                vertices.Add(Tuple.Create(e.Location, currentColorTr3));
-                drawTriangle();
-                isTriangleMode = false;
+                if (prevPoint == null)
+                {
+                    prevPoint = e.Location;
+                }
+                else
+                {
+                    if (isVu)
+                    {
+                        drawVuLine(prevPoint, e.Location);
+                    }
+                    else
+                    {
+                        drawBresenhamLine(prevPoint, e.Location);
+                    }
+                    prevPoint = null;
+                }
             }
+        }
+
+        private void drawVuLine(Point? prevPoint, Point location)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void drawBresenhamLine(Point? point, Point eLocation)
+        {
+            var bitmap = new Bitmap(canvas.Image);
+            using (FastBitmap fbitmap = new FastBitmap(bitmap))
+            {
+                var line = getLineCoordsByBresenham(point.Value, eLocation);
+                foreach(var p in line)
+                {
+                    fbitmap.SetPixel(p, Color.Black);
+                }
+            }
+            canvas.Image = bitmap;
         }
 
         private Point[] getLineHigh(int x0, int y0, int x1, int y1)
@@ -243,7 +286,7 @@ namespace RasterAlgorithms
             int D = (2 * dx) - dy;
             int x = x0;
 
-            for (int y = y0; y < y1; y++)
+            for (int y = y0; y <= y1; y++)
             {
                 res.Add(new Point(x, y));
                 if(D > 0)
@@ -273,7 +316,7 @@ namespace RasterAlgorithms
             int D = (2 * dy) - dx;
             int y = y0;
 
-            for (int x = x0; x < x1; x++)
+            for (int x = x0; x <= x1; x++)
             {
                 res.Add(new Point(x, y));
                 if (D > 0)
@@ -288,13 +331,14 @@ namespace RasterAlgorithms
             }
             return res.OrderBy(p => p.Y).ToArray();
         }
+
         /// <summary>
         /// This code has been stolen (and adapted!) from https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
         /// </summary>
         /// <param name="p1"></param>
-        /// <param name="p2"></param>
+        /// <param name="p0"></param>
         /// <returns></returns>
-        Point[] getEdgeCoords(Point p0, Point p1)
+        Point[] getLineCoordsByBresenham(Point p0, Point p1)
         {
             if(Math.Abs(p1.Y - p0.Y) < Math.Abs(p1.X - p0.X))
             {
@@ -321,24 +365,67 @@ namespace RasterAlgorithms
 
         void drawTriangle()
         {
-            vertices.OrderBy(x => x.Item1.Y).ToList();
+            vertices = vertices.OrderBy(x => x.Item1.Y).ToList();
             var bitmap = new Bitmap(canvas.Image);
             using (FastBitmap fbitmap = new FastBitmap(bitmap))
             {
-                var e1 = getEdgeCoords(vertices[1].Item1, vertices[0].Item1);
-                var e2 = getEdgeCoords(vertices[2].Item1, vertices[0].Item1);
-                var e3 = getEdgeCoords(vertices[2].Item1, vertices[1].Item1);
-                foreach(var p in e1)
+                var e1 = getLineCoordsByBresenham(vertices[0].Item1, vertices[1].Item1).GroupBy(p => p.Y).Select(g => (vertices[0].Item1.X > vertices[1].Item1.X ? g.First() : g.Last())).ToArray();
+                var e2 = getLineCoordsByBresenham(vertices[0].Item1, vertices[2].Item1).GroupBy(p => p.Y).Select(g => (vertices[0].Item1.X > vertices[2].Item1.X ? g.First() : g.Last())).ToArray();
+                var e3 = getLineCoordsByBresenham(vertices[1].Item1, vertices[2].Item1).GroupBy(p => p.Y).Select(g => (vertices[1].Item1.X > vertices[2].Item1.X ? g.First() : g.Last())).ToArray();
+
+                var c1 = HSVTools.interpolate(vertices[0].Item2, vertices[1].Item2, e1.Length);
+                var c2 = HSVTools.interpolate(vertices[0].Item2, vertices[2].Item2, e2.Length);
+                var c3 = HSVTools.interpolate(vertices[1].Item2, vertices[2].Item2, e3.Length);
+
+                for (int i = 0; i < e1.Length; i++)
                 {
-                    fbitmap.SetPixel(p, Color.Black);
+                    Color[] colors;
+                    Point left, right;
+                    if(vertices[1].Item1.X < vertices[2].Item1.X)
+                    {
+                        colors = HSVTools.interpolate(c1[i], c2[i], Math.Abs(e2[i].X - e1[i].X) + 1);
+                        left = e1[i];
+                        right = e2[i];
+                    }
+                    else
+                    {
+                        colors = HSVTools.interpolate(c2[i], c1[i], Math.Abs(e2[i].X - e1[i].X) + 1);
+                        left = e2[i];
+                        right = e1[i];
+                    }
+                    
+                    int cind = 0;
+                    for(int x = left.X; x <= right.X; x++)
+                    {
+                        fbitmap.SetPixel(new Point(x,e2[i].Y), colors[cind]);
+                        cind++;
+                    }
                 }
-                foreach (var p in e2)
+
+                for (int i = 0; i < e3.Length; i++)
                 {
-                    fbitmap.SetPixel(p, Color.Black);
-                }
-                foreach (var p in e3)
-                {
-                    fbitmap.SetPixel(p, Color.Black);
+                    int ie2 = i + e1.Length - 1;
+                    Color[] colors;
+                    Point left, right;
+                    if (vertices[1].Item1.X < vertices[2].Item1.X)
+                    {
+                        colors = HSVTools.interpolate(c3[i], c2[ie2], Math.Abs(e3[i].X - e2[ie2].X) + 1);
+                        left = e3[i];
+                        right = e2[ie2];
+                    }
+                    else
+                    {
+                        colors = HSVTools.interpolate(c2[ie2], c3[i], Math.Abs(e3[i].X - e2[ie2].X) + 1);
+                        left = e2[ie2];
+                        right = e3[i];
+                    }
+
+                    int cind = 0;
+                    for (int x = left.X; x <= right.X; x++)
+                    {
+                        fbitmap.SetPixel(new Point(x, e2[ie2].Y), colors[cind]);
+                        cind++;
+                    }
                 }
             }
             canvas.Image = bitmap;

@@ -113,9 +113,14 @@ namespace RasterAlgorithms
 
             return new HSV(h, s, max / 255.0);
         }
-        public static byte bytify(double color)
+        public static byte bytifyfull(double color)
         {
             return (byte)Math.Round((255 / 100.0) * color);
+        }
+
+        public static byte bytify(double color)
+        {
+            return (byte)Math.Round(255 * color);
         }
         public static Color HSVtoRGB(double hue, double saturation, double value)
         {
@@ -126,12 +131,12 @@ namespace RasterAlgorithms
             double vdec = value - a;
             switch (sw)
             {
-                case 0: return Color.FromArgb(bytify(value), bytify(vinc), bytify(vmin));
-                case 1: return Color.FromArgb(bytify(vdec), bytify(value), bytify(vmin));
-                case 2: return Color.FromArgb(bytify(vmin), bytify(value), bytify(vinc));
-                case 3: return Color.FromArgb(bytify(vmin), bytify(vdec), bytify(value));
-                case 4: return Color.FromArgb(bytify(vinc), bytify(vmin), bytify(value));
-                case 5: return Color.FromArgb(bytify(value), bytify(vmin), bytify(vdec));
+                case 0: return Color.FromArgb(bytifyfull(value), bytifyfull(vinc), bytifyfull(vmin));
+                case 1: return Color.FromArgb(bytifyfull(vdec), bytifyfull(value), bytifyfull(vmin));
+                case 2: return Color.FromArgb(bytifyfull(vmin), bytifyfull(value), bytifyfull(vinc));
+                case 3: return Color.FromArgb(bytifyfull(vmin), bytifyfull(vdec), bytifyfull(value));
+                case 4: return Color.FromArgb(bytifyfull(vinc), bytifyfull(vmin), bytifyfull(value));
+                case 5: return Color.FromArgb(bytifyfull(value), bytifyfull(vmin), bytifyfull(vdec));
             }
             return Color.FromArgb(0, 0, 0);
         }

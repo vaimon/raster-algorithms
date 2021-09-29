@@ -459,6 +459,18 @@ namespace RasterAlgorithms
             }
         }
 
+        public static Color[] interpolateRGB(Color start, Color end, int seed)
+        {
+            List<Color> res = new List<Color>();
+            double rstep = (end.R - start.R) / (1.0 * seed - 1), gstep = (end.G - start.G) / (1.0 * seed - 1), bstep = (1.0 * end.B - start.B) / (seed - 1);
+
+            for (int i = 0; i < seed; i++)
+            {
+                res.Add(Color.FromArgb((byte)Math.Round(start.R + rstep * i), (byte)Math.Round(start.G + gstep * i), (byte)Math.Round(start.B + bstep * i)));
+            }
+            return res.ToArray();
+        }
+
         void drawTriangle()
         {
             vertices = vertices.OrderBy(x => x.Item1.Y).ToList();
@@ -470,9 +482,13 @@ namespace RasterAlgorithms
                 var e2 = getLineCoordsByBresenham(vertices[0].Item1, vertices[2].Item1).GroupBy(p => p.Y).Select(g => (vertices[0].Item1.X > vertices[2].Item1.X ? g.First() : g.Last())).ToArray();
                 var e3 = getLineCoordsByBresenham(vertices[1].Item1, vertices[2].Item1).GroupBy(p => p.Y).Select(g => (vertices[1].Item1.X > vertices[2].Item1.X ? g.First() : g.Last())).ToArray();
 
-                var c1 = HSVTools.interpolate(vertices[0].Item2, vertices[1].Item2, e1.Length);
-                var c2 = HSVTools.interpolate(vertices[0].Item2, vertices[2].Item2, e2.Length);
-                var c3 = HSVTools.interpolate(vertices[1].Item2, vertices[2].Item2, e3.Length);
+                // var c1 = HSVTools.interpolate(vertices[0].Item2, vertices[1].Item2, e1.Length);
+                // var c2 = HSVTools.interpolate(vertices[0].Item2, vertices[2].Item2, e2.Length);
+                // var c3 = HSVTools.interpolate(vertices[1].Item2, vertices[2].Item2, e3.Length);
+
+                var c1 = interpolateRGB(vertices[0].Item2, vertices[1].Item2, e1.Length);
+                var c2 = interpolateRGB(vertices[0].Item2, vertices[2].Item2, e2.Length);
+                var c3 = interpolateRGB(vertices[1].Item2, vertices[2].Item2, e3.Length);
 
                 /*
                 for (int i = 0; i < c1.Length; i++)
@@ -496,7 +512,8 @@ namespace RasterAlgorithms
                     {
                         fbitmap.SetPixel(new Point(120 + j, 200 + i), c3[i]);
                     }
-                }*/
+                }
+                */
 
                 for (int i = 0; i < e1.Length; i++)
                 {
@@ -504,13 +521,15 @@ namespace RasterAlgorithms
                     Point left, right;
                     if(vertices[1].Item1.X < vertices[2].Item1.X)
                     {
-                        colors = HSVTools.interpolate(c1[i], c2[i], Math.Abs(e2[i].X - e1[i].X) + 1);
+                        //colors = HSVTools.interpolate(c1[i], c2[i], Math.Abs(e2[i].X - e1[i].X) + 1);
+                        colors = interpolateRGB(c1[i], c2[i], Math.Abs(e2[i].X - e1[i].X) + 1);
                         left = e1[i];
                         right = e2[i];
                     }
                     else
                     {
-                        colors = HSVTools.interpolate(c2[i], c1[i], Math.Abs(e2[i].X - e1[i].X) + 1);
+                        // colors = HSVTools.interpolate(c2[i], c1[i], Math.Abs(e2[i].X - e1[i].X) + 1);
+                        colors = interpolateRGB(c2[i], c1[i], Math.Abs(e2[i].X - e1[i].X) + 1);
                         left = e2[i];
                         right = e1[i];
                     }
@@ -530,13 +549,15 @@ namespace RasterAlgorithms
                     Point left, right;
                     if (vertices[1].Item1.X < vertices[2].Item1.X)
                     {
-                        colors = HSVTools.interpolate(c3[i], c2[ie2], Math.Abs(e3[i].X - e2[ie2].X) + 1);
+                        // colors = HSVTools.interpolate(c3[i], c2[ie2], Math.Abs(e3[i].X - e2[ie2].X) + 1);
+                        colors = interpolateRGB(c3[i], c2[ie2], Math.Abs(e3[i].X - e2[ie2].X) + 1);
                         left = e3[i];
                         right = e2[ie2];
                     }
                     else
                     {
-                        colors = HSVTools.interpolate(c2[ie2], c3[i], Math.Abs(e3[i].X - e2[ie2].X) + 1);
+                        // colors = HSVTools.interpolate(c2[ie2], c3[i], Math.Abs(e3[i].X - e2[ie2].X) + 1);
+                        colors = interpolateRGB(c2[ie2], c3[i], Math.Abs(e3[i].X - e2[ie2].X) + 1);
                         left = e2[ie2];
                         right = e3[i];
                     }

@@ -152,18 +152,70 @@ namespace RasterAlgorithms
             // сохраняем координаты для начала обхода по границе
             p.X = x + width; 
             p.Y = y + height / 2;
+
+            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
         }
 
         // рисование кружочка
         private void buttonSquare_Click(object sender, EventArgs e)
         {
+            changeVisibility(false, false);
+            isDrawingMode = true;
+            isTriangleMode = false;
+            isLineMode = false;
 
+            canvas.Image = new Bitmap(1300, 900);
+            image = new Bitmap(1300, 900);
+            canvas.Image = image;
+
+            int width = 350, height = 350;
+            int x = (canvas.Width - width) / 2;
+            int y = (canvas.Height - height + 50) / 2;
+
+            g = Graphics.FromImage(canvas.Image);
+            //g.DrawEllipse(Pens.Pink, x, y, width, height);
+            g.FillRectangle(Brushes.Pink, x, y, width, height);
+
+            // сохраняем координаты для начала обхода по границе
+            p.X = x + width;
+            p.Y = y + height / 2;
+
+            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
         }
 
         // рисование кружочка
         private void buttonStar_Click(object sender, EventArgs e)
         {
+            changeVisibility(false, false);
+            isDrawingMode = true;
+            isTriangleMode = false;
+            isLineMode = false;
 
+            canvas.Image = new Bitmap(1300, 900);
+            image = new Bitmap(1300, 900);
+            canvas.Image = image;
+
+            int n = 5;               // число вершин
+            double R = 200, r = 100;   // радиусы
+            double alpha = 0;        // поворот
+            double x0 = canvas.Width / 2, y0 = canvas.Height / 2; // центр
+
+            PointF[] points = new PointF[2 * n + 1];
+            double a = alpha, da = Math.PI / n, l;
+            for (int k = 0; k < 2 * n + 1; k++)
+            {
+                l = k % 2 == 0 ? r : R;
+                points[k] = new PointF((float)(x0 + l * Math.Cos(a)), (float)(y0 + l * Math.Sin(a)));
+                a += da;
+            }
+            g = Graphics.FromImage(canvas.Image);
+            g.FillPolygon(new System.Drawing.SolidBrush(Color.Pink), points);
+
+            // сохраняем координаты для начала обхода по границе
+            p.X = (int)points[0].X;
+            p.Y = (int)points[0].Y;
+
+            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
         }
 
         // открывает панель с рисованием границы и выбором фигуры
@@ -190,7 +242,6 @@ namespace RasterAlgorithms
                 buttonStar.Visible = false;
             }
         }
-
 
         /// <summary>
         /// Выделяем границы

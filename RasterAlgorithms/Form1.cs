@@ -19,11 +19,18 @@ namespace RasterAlgorithms
         bool isDrawingMode = false;
         bool isFillingMode = false;
         Bitmap bcanvas;
+         Pen p;
 
+       // private Graphics g;
         public Form1()
         {
             var x = HSVTools.interpolate(Color.Red, Color.Blue, 10);
+        
+           // canvas.Image = new Bitmap(canvas.Width, canvas.Height);
+            p = new Pen(Color.Black, 1);
             InitializeComponent();
+            // g = Graphics.FromImage(canvas.Image);
+
         }
 
         /// <summary>
@@ -212,8 +219,9 @@ namespace RasterAlgorithms
             {
                 color3.BackColor = colorDialog.Color;
             }
-        }
-
+        } 
+        Color oldcolor;
+       
         private void canvas_MouseClick(object sender, MouseEventArgs e)
         {
             if (isTriangleMode)
@@ -234,7 +242,8 @@ namespace RasterAlgorithms
                     drawTriangle();
                     vertices.Clear();
                 }
-            } else if (isLineMode)
+            }
+            else if (isLineMode)
             {
                 if (prevPoint == null)
                 {
@@ -252,12 +261,21 @@ namespace RasterAlgorithms
                     }
                     prevPoint = null;
                 }
-               
+
             }
             else if (isFillingMode)
-                {
-                    FillFigure(e.Location, currentColorFill);
-                }
+            {
+                //FillFigure(e.Location, currentColorFill);
+                oldcolor = ((Bitmap)canvas.Image).GetPixel(e.X, e.Y);
+                p.Color = currentColorFill;
+                if (!(oldcolor.R == currentColorFill.R && oldcolor.G == currentColorFill.G
+                    && oldcolor.B == currentColorFill.B))
+                    fillArea(e.X,e.Y);
+            }
+            /*else
+            {
+                FillImage(e.Location, currentFileName);
+            }*/
         }
         /* private void getMousecoord(Point p,Color c)
 {
@@ -267,11 +285,56 @@ var bitmap = new Bitmap(canvas.Image);
 FillFigure( p, c);
 canvas.Image = bitmap;
 }*/
+       
         private bool CheckPixel(Color cur, Color c2)
         {
             if (cur != c2)
                 return true;
             else return false;
+        }
+        void fillArea(int x, int y)
+        {
+            Bitmap bitmap = canvas.Image as Bitmap;
+            Color currentColor = bitmap.GetPixel(x, y);
+            if (currentColor != oldcolor || currentColor == p.Color)
+                return;
+            
+            int leftgr =x;//левая граница
+            int rightgr =x;//правая граница
+            
+            while (leftgr > 0 && bitmap.GetPixel(leftgr, y) == oldcolor)
+            {
+                leftgr--;
+            }
+
+           
+            while (rightgr < bitmap.Size.Width && bitmap.GetPixel(rightgr, y) == oldcolor)
+            {
+                rightgr++;
+            }
+            using (Graphics g = Graphics.FromImage(canvas.Image))
+            {
+                g.DrawLine(p, leftgr + 1, y, rightgr - 1, y);
+            }
+           // g.DrawLine(p, leftgr+1,y, rightgr-1,y);
+            /*for (int i = leftgr + 1; i < rightgr; i++)
+            {
+
+               // fbitmap.SetPixel(new Point(i, y), currentColorFill);
+                bitmap.SetPixel(i, y, currentColorFill);
+            }*/
+
+            if (y + 1 < bitmap.Height)
+                for (int i = leftgr + 1; i < rightgr; ++i)
+                    fillArea(i, y + 1);
+
+            if (y - 1 > 0)
+                for (int i = leftgr + 1; i < rightgr; ++i)
+                    fillArea(i, y - 1);
+
+           //
+            //canvas.Image = bitmap;
+            canvas.Invalidate();
         }
         private void FillFigure(Point p, Color c)
         {
@@ -281,50 +344,121 @@ canvas.Image = bitmap;
             int rightgr = p.X;//правая граница
             int y = p.Y;
             Color fillcolor = c;
-
-            using (FastBitmap fbitmap = new FastBitmap(bitmap))
+            Bitmap bitmap1 = canvas.Image as Bitmap;
+          //  using (FastBitmap fbitmap = new FastBitmap(bitmap))
             {
-                Color currentcolor = fbitmap.GetPixel(p);
-                while (!(currentcolor.R == 0) && !(currentcolor.G == 0) && !(currentcolor.B == 0))
-                {
-                    rightgr++;
-                    currentcolor = fbitmap.GetPixel(new Point(rightgr, y));
-                }
-                currentcolor = fbitmap.GetPixel(p);
-                while (!(currentcolor.R == 0) && !(currentcolor.G == 0) && !(currentcolor.B == 0))
-                {
-                    leftgr--;
-                    currentcolor = fbitmap.GetPixel(new Point(leftgr, y));
-                }
+                //Color currentcolor = fbitmap.GetPixel(p);
+                Color currentcolor = bitmap1.GetPixel(x,y);
+                if ((currentcolor.A != c.A) && (currentcolor.R != c.R) && (currentcolor.G != c.G) && (currentcolor.B != c.B))
+                    return;
+                if (x > bitmap1.Size.Width)
+                    return;
+                if (y > bitmap1.Size.Height)
+                    return;
+              //  {
+                    while (!(currentcolor.A == 0) && !(currentcolor.R == 0) && !(currentcolor.G == 0) && !(currentcolor.B == 0)&& (rightgr <= bitmap1.Size.Width))
+                    {
 
-                for (int i = leftgr + 1; i < rightgr; i++)
-                {
-               
-                    fbitmap.SetPixel(new Point(i, y), currentColorFill);
-                }
+                        // currentcolor = fbitmap.GetPixel(new Point(rightgr, y));
+                       // if (rightgr <= bitmap1.Width)
+                       // {
+                            rightgr++;
+                            currentcolor = bitmap1.GetPixel(rightgr, y);
+                       // }
+                       // else break;
+                    }
+                    //currentcolor = fbitmap.GetPixel(p);
+                    currentcolor = bitmap1.GetPixel(x, y);
+                    while (!(currentcolor.A == 0)&&!(currentcolor.R == 0) && !(currentcolor.G == 0) && !(currentcolor.B == 0)&& (leftgr >= 0))
+                    {
+                       // if (leftgr >= 0)
+                       // {
+                            leftgr--;
+                            //currentcolor = fbitmap.GetPixel(new Point(leftgr, y));
+                            currentcolor = bitmap1.GetPixel(leftgr, y);
+                       // }
+                        //else break;
+                    }
+
+                    for (int i = leftgr + 1; i < rightgr; i++)
+                    {
+
+                        //fbitmap.SetPixel(new Point(i, y), currentColorFill);
+                        bitmap1.SetPixel(i, y, currentColorFill);
+                    }
 
 
-                // if (y+1<fbitmap.Height)
-                for (int i = leftgr+1; i < rightgr; i++)
-                {
-                //fbitmap.SetPixel(new Point(i, y+1), fillcolor);
-                FillFigure(new Point(i, y + 1), fillcolor);
-                }
-                /*
-                if (y-1>0)
-                for (int i = leftgr; i < rightgr; i++)
-                {
-                //fbitmap.SetPixel(new Point(i, y-1), fillcolor);
-                FillFigure(new Point(i, y - 1), fillcolor);
-                }*/
-
+                    if ((y + 1 < bitmap1.Size.Height) )
+                        for (int i = leftgr + 1; i < rightgr; i++)
+                        {
+                        //fbitmap.SetPixel(new Point(i, y+1), fillcolor);
+                        Color col = bitmap1.GetPixel(i, y + 1);
+                        if (col!=currentColorFill)
+                            FillFigure(new Point(i, y + 1), fillcolor);
+                        }
+                    /*
+                    if (y-1>0)
+                    for (int i = leftgr; i < rightgr; i++)
+                    {
+                    //fbitmap.SetPixel(new Point(i, y-1), fillcolor);
+                    FillFigure(new Point(i, y - 1), fillcolor);
+                    }*/
+               // }
 
 
             }
-            canvas.Image = bitmap;
+            //canvas.Image = bitmap;
+            canvas.Image = bitmap1;
 
         }
-        private float frac(double f)
+        private void FillImage(Point p, string filename)
+        {
+            Image newImage = Image.FromFile(filename);
+            var imbitmap = new Bitmap(newImage);
+            var bitmap = new Bitmap(canvas.Image);
+            int rightgr = p.X;
+            int downgr = p.Y;
+            Color currentColor = bitmap.GetPixel(p.X,p.Y);
+            while ((rightgr <= bitmap.Size.Width))//!(currentColor==Color.Black)
+            {
+
+                // currentcolor = fbitmap.GetPixel(new Point(rightgr, y));
+                // if (rightgr <= bitmap1.Width)
+                // {
+                rightgr++;
+                currentColor = bitmap.GetPixel(rightgr, p.Y);
+                // }
+                // else break;
+            }
+            //currentcolor = fbitmap.GetPixel(p);
+            while (  (downgr <= bitmap.Size.Height))//!(currentColor == Color.Black)
+            {
+
+                // currentcolor = fbitmap.GetPixel(new Point(rightgr, y));
+                // if (rightgr <= bitmap1.Width)
+                // {
+                downgr++;
+                currentColor = bitmap.GetPixel(rightgr, p.Y);
+                // }
+                // else break;
+            }
+
+            using (FastBitmap fbitmap = new FastBitmap(bitmap))
+            {
+                int i1 = 0;
+                int j1 = 0;
+                for (int i = p.X; i < rightgr; i++)
+                    for (int j = p.Y; j < downgr; j++)
+                    {
+                        Color c = imbitmap.GetPixel(i1, j1);
+                        fbitmap.SetPixel(new Point(i, j), c);
+                        i1++;
+                        j1++;
+                    }
+            }
+            canvas.Image = bitmap;
+        }
+            private float frac(double f)
         {
             return (float)(f - Math.Truncate(f));
         }

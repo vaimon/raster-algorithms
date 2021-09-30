@@ -49,6 +49,7 @@ namespace RasterAlgorithms
             isDrawingMode = false;
             isTriangleMode = false;
             isLineMode = false;
+            visibleBorderButtons(false);
             /// Выбираем цвет
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
@@ -68,6 +69,7 @@ namespace RasterAlgorithms
             changeVisibility(false, false);
             isTriangleMode = false;
             isLineMode = false;
+            visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             /// Выбираем файл для заливки
             if (chooseFileDialog.ShowDialog() == DialogResult.OK)
@@ -119,6 +121,77 @@ namespace RasterAlgorithms
             }
         }
 
+        /* -------------------------- выделение границы -------------------------- */
+        private Bitmap image = null;
+        private Graphics g;
+        private Point p;
+
+        private LinkedList<Tuple<int, int>> borderPixels; // граница изображения
+
+
+        // рисование кружочка
+        private void buttonCircle_Click(object sender, EventArgs e)
+        {
+            changeVisibility(false, false);
+            isDrawingMode = true;
+            isTriangleMode = false;
+            isLineMode = false;
+
+            canvas.Image = new Bitmap(1300, 900);
+            image = new Bitmap(1300, 900);
+            canvas.Image = image;
+
+            int width = 350, height = 350;
+            int x = (canvas.Width - width) / 2;
+            int y = (canvas.Height - height + 50) / 2;
+
+            g = Graphics.FromImage(canvas.Image);
+            //g.DrawEllipse(Pens.Pink, x, y, width, height);
+            g.FillEllipse(Brushes.Pink, x, y, width, height);
+
+            // сохраняем координаты для начала обхода по границе
+            p.X = x + width; 
+            p.Y = y + height / 2;
+        }
+
+        // рисование кружочка
+        private void buttonSquare_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // рисование кружочка
+        private void buttonStar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // открывает панель с рисованием границы и выбором фигуры
+        private void buttonBorders_Click(object sender, EventArgs e)
+        {
+            visibleBorderButtons(true);
+        }
+
+        // видимость/невидимость панели с границей
+        private void visibleBorderButtons(bool flag)
+        {
+            if (flag)
+            {
+                buttonHighlight.Visible = true;
+                buttonCircle.Visible = true;
+                buttonSquare.Visible = true;
+                buttonStar.Visible = true;
+            }
+            else
+            {
+                buttonHighlight.Visible = false;
+                buttonCircle.Visible = false;
+                buttonSquare.Visible = false;
+                buttonStar.Visible = false;
+            }
+        }
+
+
         /// <summary>
         /// Выделяем границы
         /// </summary>
@@ -126,16 +199,6 @@ namespace RasterAlgorithms
         /// <param name="e"></param>
         private void buttonHighlight_Click(object sender, EventArgs e)
         {
-            changeVisibility(false, false);
-            isDrawingMode = false;
-            isTriangleMode = false;
-            isLineMode = false;
-            canvas.Image = new Bitmap(1300, 900);
-
-            if (chooseFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                currentFileName = chooseFileDialog.FileName;
-            }
         }
 
         private bool isLineMode = false;
@@ -150,7 +213,7 @@ namespace RasterAlgorithms
             changeVisibility(true, false);
             isDrawingMode = false;
             isTriangleMode = false;
-
+            visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             /// Алгоритм по умолчанию
             comboBoxLine.SelectedIndex = 0;
@@ -180,6 +243,7 @@ namespace RasterAlgorithms
             changeVisibility(false, true);
             isDrawingMode = false;
             isLineMode = false;
+            visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             color1.BackColor = Color.Red;
             color2.BackColor = Color.FromArgb(0,255,0);

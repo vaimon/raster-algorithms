@@ -98,6 +98,7 @@ namespace RasterAlgorithms
             changeVisibility(false, false);
             isTriangleMode = false;
             isLineMode = false;
+            isFillingMode = false;
             visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             /// Выбираем файл для заливки
@@ -252,6 +253,11 @@ namespace RasterAlgorithms
         private void buttonBorders_Click(object sender, EventArgs e)
         { 
             visibleBorderButtons(true);
+            isFillingMode = false;
+            isDrawingMode = false;
+            isLineMode = false;
+            isTriangleMode = false;
+            canvas.Image = new Bitmap(1300, 900);
         }
 
         // видимость/невидимость панели с границей
@@ -417,6 +423,7 @@ namespace RasterAlgorithms
             changeVisibility(true, false);
             isDrawingMode = false;
             isTriangleMode = false;
+            isFillingMode = false;
             visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             /// Алгоритм по умолчанию
@@ -447,6 +454,7 @@ namespace RasterAlgorithms
             changeVisibility(false, true);
             isDrawingMode = false;
             isLineMode = false;
+            isFillingMode = false;
             visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             color1.BackColor = Color.Red;
@@ -530,14 +538,14 @@ namespace RasterAlgorithms
                    if (oldcolor!=currentColorFill)//вызываем заливку
                     fillfigure(e.X,e.Y);
             }
-             else if (isDrawingMode)
-            {
-                //FillImage(e.Location, currentFileName);//вызываем заливку картинкой
-                oldcolor = ((Bitmap)canvas.Image).GetPixel(e.X, e.Y);
-                p.Color = currentColorFill;
-                if (oldcolor != currentColorFill)//вызываем заливку
-                    fillfigure(e.X, e.Y);
-            }
+            // else if (isDrawingMode)
+            //{
+            //    //FillImage(e.Location, currentFileName);//вызываем заливку картинкой
+            //    oldcolor = ((Bitmap)canvas.Image).GetPixel(e.X, e.Y);
+            //    p.Color = currentColorFill;
+            //    if (oldcolor != currentColorFill)//вызываем заливку
+            //        fillfigure(e.X, e.Y);
+            //}
         }
         /* private void getMousecoord(Point p,Color c)
 {

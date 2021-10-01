@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -366,7 +366,6 @@ canvas.Image = bitmap;
               //  {
                     while (!(currentcolor.A == 0) && !(currentcolor.R == 0) && !(currentcolor.G == 0) && !(currentcolor.B == 0)&& (rightgr <= bitmap1.Size.Width))
                     {
-
                         // currentcolor = fbitmap.GetPixel(new Point(rightgr, y));
                        // if (rightgr <= bitmap1.Width)
                        // {
@@ -387,15 +386,11 @@ canvas.Image = bitmap;
                        // }
                         //else break;
                     }
-
                     for (int i = leftgr + 1; i < rightgr; i++)
                     {
-
                         //fbitmap.SetPixel(new Point(i, y), currentColorFill);
                         bitmap1.SetPixel(i, y, currentColorFill);
                     }
-
-
                     if ((y + 1 < bitmap1.Size.Height) )
                         for (int i = leftgr + 1; i < rightgr; i++)
                         {
@@ -412,12 +407,9 @@ canvas.Image = bitmap;
                     FillFigure(new Point(i, y - 1), fillcolor);
                     }
                // }
-
-
             }
             //canvas.Image = bitmap;
             canvas.Image = bitmap1;
-
         }*/
         private void FillImage(Point p, string filename)
         {
@@ -719,7 +711,6 @@ canvas.Image = bitmap;
                         fbitmap.SetPixel(new Point(110 + j, 200 + i), c2[i]);
                     }
                 }
-
                 for (int i = 0; i < c3.Length; i++)
                 {
                     for (int j = 0; j < 7; j++)

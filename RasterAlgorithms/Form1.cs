@@ -268,14 +268,13 @@ namespace RasterAlgorithms
                 //FillFigure(e.Location, currentColorFill);
                 oldcolor = ((Bitmap)canvas.Image).GetPixel(e.X, e.Y);
                 p.Color = currentColorFill;
-                if (!(oldcolor.R == currentColorFill.R && oldcolor.G == currentColorFill.G
-                    && oldcolor.B == currentColorFill.B))
-                    fillArea(e.X,e.Y);
+                   if (oldcolor!=currentColorFill)//вызываем заливку
+                    fillfigure(e.X,e.Y);
             }
-            /*else
+             else if (isDrawingMode)
             {
-                FillImage(e.Location, currentFileName);
-            }*/
+                FillImage(e.Location, currentFileName);//вызываем заливку картинкой
+            }
         }
         /* private void getMousecoord(Point p,Color c)
 {
@@ -285,59 +284,68 @@ var bitmap = new Bitmap(canvas.Image);
 FillFigure( p, c);
 canvas.Image = bitmap;
 }*/
-       
+
         private bool CheckPixel(Color cur, Color c2)
         {
             if (cur != c2)
                 return true;
             else return false;
         }
-        void fillArea(int x, int y)
+        void fillfigure(int x, int y)
         {
             Bitmap bitmap = canvas.Image as Bitmap;
             Color currentColor = bitmap.GetPixel(x, y);
-            if (currentColor != oldcolor || currentColor == p.Color)
+            if (CheckPixel(currentColor,oldcolor )|| currentColor == p.Color)//&& currentColor==Color.Black
                 return;
             
             int leftgr =x;//левая граница
             int rightgr =x;//правая граница
             
-            while (leftgr > 0 && bitmap.GetPixel(leftgr, y) == oldcolor)
+            while (( bitmap.GetPixel(leftgr, y) == oldcolor) &&(leftgr >= 0))//==oldcolor
             {
                 leftgr--;
             }
 
            
-            while (rightgr < bitmap.Size.Width && bitmap.GetPixel(rightgr, y) == oldcolor)
+            while (( bitmap.GetPixel(rightgr, y) == oldcolor)&&(rightgr <= canvas.Width))//bitmap
             {
                 rightgr++;
             }
-            using (Graphics g = Graphics.FromImage(canvas.Image))
+            // using (Graphics g = Graphics.FromImage(canvas.Image))
+            // {
+            //g.DrawLine(p, leftgr + 1, y, rightgr - 1, y);//c drawline почему-то иногда происходит stackOverflow при получении
+            //координаты точки, где кликнули мышкой
+            //}
+            
+            if (leftgr + 1 == rightgr - 1)
             {
-                g.DrawLine(p, leftgr + 1, y, rightgr - 1, y);
+                bitmap.SetPixel(leftgr + 1, y, currentColorFill);
+             
             }
-           // g.DrawLine(p, leftgr+1,y, rightgr-1,y);
-            /*for (int i = leftgr + 1; i < rightgr; i++)
-            {
+            else {
+                for (int i = leftgr + 1; i < rightgr; i++)
+                {
 
-               // fbitmap.SetPixel(new Point(i, y), currentColorFill);
-                bitmap.SetPixel(i, y, currentColorFill);
-            }*/
+                    // fbitmap.SetPixel(new Point(i, y), currentColorFill);
+                    bitmap.SetPixel(i, y, currentColorFill);//а вот с setpixel норм
+                }
+            }
+            canvas.Invalidate();
 
-            if (y + 1 < bitmap.Height)
+            if (y + 1 <= bitmap.Height)
                 for (int i = leftgr + 1; i < rightgr; ++i)
-                    fillArea(i, y + 1);
+                    fillfigure(i, y + 1);
 
-            if (y - 1 > 0)
+            if (y - 1 >= 0)
                 for (int i = leftgr + 1; i < rightgr; ++i)
-                    fillArea(i, y - 1);
+                    fillfigure(i, y - 1);
 
            //
             //canvas.Image = bitmap;
-            canvas.Invalidate();
+         
         }
-        private void FillFigure(Point p, Color c)
-        {
+        /*private void FillFigure(Point p, Color c)
+        { 
             var bitmap = new Bitmap(canvas.Image);
             int x = p.X;
             int leftgr = p.X;//левая граница
@@ -396,13 +404,13 @@ canvas.Image = bitmap;
                         if (col!=currentColorFill)
                             FillFigure(new Point(i, y + 1), fillcolor);
                         }
-                    /*
+                    
                     if (y-1>0)
                     for (int i = leftgr; i < rightgr; i++)
                     {
                     //fbitmap.SetPixel(new Point(i, y-1), fillcolor);
                     FillFigure(new Point(i, y - 1), fillcolor);
-                    }*/
+                    }
                // }
 
 
@@ -410,12 +418,13 @@ canvas.Image = bitmap;
             //canvas.Image = bitmap;
             canvas.Image = bitmap1;
 
-        }
+        }*/
         private void FillImage(Point p, string filename)
         {
             Image newImage = Image.FromFile(filename);
-            var imbitmap = new Bitmap(newImage);
-            var bitmap = new Bitmap(canvas.Image);
+          
+            Bitmap bitmap = canvas.Image as Bitmap;
+            Bitmap imbitmap = newImage as Bitmap;
             int rightgr = p.X;
             int downgr = p.Y;
             Color currentColor = bitmap.GetPixel(p.X,p.Y);
@@ -438,7 +447,7 @@ canvas.Image = bitmap;
                 // if (rightgr <= bitmap1.Width)
                 // {
                 downgr++;
-                currentColor = bitmap.GetPixel(rightgr, p.Y);
+                currentColor = bitmap.GetPixel(p.X, downgr);
                 // }
                 // else break;
             }

@@ -49,6 +49,7 @@ namespace RasterAlgorithms
             isDrawingMode = false;
             isTriangleMode = false;
             isLineMode = false;
+            visibleBorderButtons(false);
             /// Выбираем цвет
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
@@ -68,6 +69,7 @@ namespace RasterAlgorithms
             changeVisibility(false, false);
             isTriangleMode = false;
             isLineMode = false;
+            visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             /// Выбираем файл для заливки
             if (chooseFileDialog.ShowDialog() == DialogResult.OK)
@@ -119,6 +121,249 @@ namespace RasterAlgorithms
             }
         }
 
+        /* -------------------------- выделение границы -------------------------- */
+        private Bitmap image = null;
+        private Graphics g;
+        private Point p;
+
+        private LinkedList<Point> borderPixels; // граница изображения
+
+
+        // рисование кружочка
+        private void buttonCircle_Click(object sender, EventArgs e)
+        {
+            changeVisibility(false, false);
+            isDrawingMode = true;
+            isTriangleMode = false;
+            isLineMode = false;
+
+            canvas.Image = new Bitmap(1300, 900);
+            image = new Bitmap(1300, 900);
+            canvas.Image = image;
+
+            int width = 350, height = 350;
+            int x = (canvas.Width - width) / 2;
+            int y = (canvas.Height - height + 50) / 2;
+
+            g = Graphics.FromImage(canvas.Image);
+            //g.DrawEllipse(Pens.Pink, x, y, width, height);
+            g.FillEllipse(Brushes.Pink, x, y, width, height);
+
+            // сохраняем координаты для начала обхода по границе
+            p.X = x + width; 
+            p.Y = y + height / 2;
+
+            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
+        }
+
+        // рисование кружочка
+        private void buttonSquare_Click(object sender, EventArgs e)
+        {
+            changeVisibility(false, false);
+            isDrawingMode = true;
+            isTriangleMode = false;
+            isLineMode = false;
+
+            canvas.Image = new Bitmap(1300, 900);
+            image = new Bitmap(1300, 900);
+            canvas.Image = image;
+
+            int width = 350, height = 350;
+            int x = (canvas.Width - width) / 2;
+            int y = (canvas.Height - height + 50) / 2;
+
+            g = Graphics.FromImage(canvas.Image);
+            //g.DrawEllipse(Pens.Pink, x, y, width, height);
+            g.FillRectangle(Brushes.Pink, x, y, width, height);
+
+            // сохраняем координаты для начала обхода по границе
+            p.X = x + width;
+            p.Y = y + height / 2;
+
+            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
+        }
+
+        // рисование кружочка
+        private void buttonStar_Click(object sender, EventArgs e)
+        {
+            changeVisibility(false, false);
+            isDrawingMode = true;
+            isTriangleMode = false;
+            isLineMode = false;
+
+            canvas.Image = new Bitmap(1300, 900);
+            image = new Bitmap(1300, 900);
+            canvas.Image = image;
+
+            int n = 5;               // число вершин
+            double R = 200, r = 100;   // радиусы
+            double alpha = 0;        // поворот
+            double x0 = canvas.Width / 2, y0 = canvas.Height / 2; // центр
+
+            PointF[] points = new PointF[2 * n + 1];
+            double a = alpha, da = Math.PI / n, l;
+            for (int k = 0; k < 2 * n + 1; k++)
+            {
+                l = k % 2 == 0 ? r : R;
+                points[k] = new PointF((float)(x0 + l * Math.Cos(a)), (float)(y0 + l * Math.Sin(a)));
+                a += da;
+            }
+            g = Graphics.FromImage(canvas.Image);
+            g.FillPolygon(new System.Drawing.SolidBrush(Color.Pink), points);
+
+            // сохраняем координаты для начала обхода по границе
+            p.X = (int)points[0].X;
+            p.Y = (int)points[0].Y;
+
+            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
+        }
+
+        // открывает панель с рисованием границы и выбором фигуры
+        private void buttonBorders_Click(object sender, EventArgs e)
+        { 
+            visibleBorderButtons(true);
+        }
+
+        // видимость/невидимость панели с границей
+        private void visibleBorderButtons(bool flag)
+        {
+            if (flag)
+            {
+                buttonHighlight.Visible = true;
+                buttonCircle.Visible = true;
+                buttonSquare.Visible = true;
+                buttonStar.Visible = true;
+            }
+            else
+            {
+                buttonHighlight.Visible = false;
+                buttonCircle.Visible = false;
+                buttonSquare.Visible = false;
+                buttonStar.Visible = false;
+            }
+        }
+
+        // получить координаты следующего пикселя по направлению
+        // 3 2 1
+        // 4 x 0
+        // 5 6 7
+        private Point nextPixel(int x, int y, int step)
+        {
+            switch (step)
+            {
+                case 0:
+                    return new Point(x + 1, y);
+                case 1:
+                    return new Point(x + 1, y - 1);
+                case 2:
+                    return new Point(x, y - 1);
+                case 3:
+                    return new Point(x - 1, y - 1);
+                case 4:
+                    return new Point(x - 1, y);
+                case 5:
+                    return new Point(x - 1, y + 1);
+                case 6:
+                    return new Point(x, y + 1);
+                case 7:
+                    return new Point(x + 1, y + 1);
+                default:
+                    return new Point(x, y);
+            }
+        }
+
+        // получание следующего пикселя границы
+        // 3 2 1
+        // 4 x 0
+        // 5 6 7
+        private void GetBorder(int x, int y)
+        {
+            Color colorOfBorder; // цвет крайних пикселей(начальной границы) изображения
+            Point point; // текущий пиксель
+            int count = 0; // проверка на выход из алгоритма
+            int directionOfStep = 6; // направление для поиска нужного пикселя
+
+            borderPixels = new LinkedList<Point>(); // крайние граничные пиксели изображения - будущая обрисованная граница
+            borderPixels.AddLast(new Point(x, y));
+
+            using (var fimage = new FastBitmap(image))
+            {
+                colorOfBorder = fimage.GetPixel(new Point(x, y));
+
+                /* В самый первый раз обход начинаем вниз. Проверяем, закрашена
+                   ли точка цветом границы. Если нет, то поиск закрашенной цветом
+                   границы точки продолжаем против часовой стрелки. */
+                point = nextPixel(x, y, directionOfStep); // первый раз идем вниз
+                if (fimage.GetPixel(new Point(point.X, point.Y)) == colorOfBorder) // если первый внизу пиксель - тоже граница
+                {
+                    y += 1;
+                    directionOfStep = 4;
+                    borderPixels.AddLast(new Point(x, y));
+                }
+                else // если не граница, то поиск закрашенной цветом границы точки продолжается против часовой стрелки
+                {
+                    point = nextPixel(x, y, directionOfStep);
+                    while (fimage.GetPixel(new Point(point.X, point.Y)) != colorOfBorder)
+                    {
+                        directionOfStep = (directionOfStep + 1) % 8; // движение против часовой
+                        point = nextPixel(x, y, directionOfStep);
+                    }
+
+                    x = point.X;
+                    y = point.Y;
+                    borderPixels.AddLast(new Point(x, y));
+
+                    directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли                   
+                }
+
+
+                /* В список заносим, сохраняя упорядоченность по y, если же y-ки
+                   имеют одинаковые значения, то по x. Выбор следующей точки
+                   (i+1)-ой, где i>1, на 90 градусов по часовой стрелке от того
+                   направления, по которому мы туда пришли. */
+                while ((x != p.X || y != p.Y || directionOfStep != 6) && count != fimage.Width * fimage.Height) // пока не вернемся на стартовую позицию
+                {
+                    point = nextPixel(x, y, directionOfStep);
+                    if (fimage.GetPixel(new Point(point.X, point.Y)) == colorOfBorder) // если текущий пиксель - граница
+                    {
+                        x = point.X;
+                        y = point.Y;
+                        borderPixels.AddLast(new Point(x, y));
+
+                        directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли   
+                    }
+                    else
+                    {
+                        point = nextPixel(x, y, directionOfStep);
+                        while (fimage.GetPixel(new Point(point.X, point.Y)) != colorOfBorder)
+                        {
+                            directionOfStep = (directionOfStep + 1) % 8; // движение против часовой
+                            point = nextPixel(x, y, directionOfStep);
+                        }
+
+                        x = point.X;
+                        y = point.Y;
+                        borderPixels.AddLast(new Point(x, y));
+
+                        directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли   
+                    }
+
+                    count++;
+                }
+            }
+        }
+
+        // рисование границы по полученным с помощью GetBorder пикселям из borderPixels
+        private void DrawBorder()
+        {
+            using (var fimage = new FastBitmap(image))
+            {
+                foreach (Point pixel in borderPixels)
+                    fimage.SetPixel(new Point(pixel.X, pixel.Y), Color.Black);
+            }
+            canvas.Image = image;
+        }
+
         /// <summary>
         /// Выделяем границы
         /// </summary>
@@ -126,16 +371,8 @@ namespace RasterAlgorithms
         /// <param name="e"></param>
         private void buttonHighlight_Click(object sender, EventArgs e)
         {
-            changeVisibility(false, false);
-            isDrawingMode = false;
-            isTriangleMode = false;
-            isLineMode = false;
-            canvas.Image = new Bitmap(1300, 900);
-
-            if (chooseFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                currentFileName = chooseFileDialog.FileName;
-            }
+            GetBorder(p.X, p.Y);
+            DrawBorder();
         }
 
         private bool isLineMode = false;
@@ -150,7 +387,7 @@ namespace RasterAlgorithms
             changeVisibility(true, false);
             isDrawingMode = false;
             isTriangleMode = false;
-
+            visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             /// Алгоритм по умолчанию
             comboBoxLine.SelectedIndex = 0;
@@ -180,6 +417,7 @@ namespace RasterAlgorithms
             changeVisibility(false, true);
             isDrawingMode = false;
             isLineMode = false;
+            visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             color1.BackColor = Color.Red;
             color2.BackColor = Color.FromArgb(0,255,0);

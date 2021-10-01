@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,12 +17,20 @@ namespace RasterAlgorithms
         Color currentColorFill;
         bool isVu = false;
         bool isDrawingMode = false;
+        bool isFillingMode = false;
         Bitmap bcanvas;
+         Pen p;
 
+       // private Graphics g;
         public Form1()
         {
             var x = HSVTools.interpolate(Color.Red, Color.Blue, 10);
+        
+           // canvas.Image = new Bitmap(canvas.Width, canvas.Height);
+            p = new Pen(Color.Black, 1);
             InitializeComponent();
+            // g = Graphics.FromImage(canvas.Image);
+
         }
 
         /// <summary>
@@ -49,7 +57,7 @@ namespace RasterAlgorithms
             isDrawingMode = false;
             isTriangleMode = false;
             isLineMode = false;
-            visibleBorderButtons(false);
+            isFillingMode = true;
             /// Выбираем цвет
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
@@ -69,7 +77,6 @@ namespace RasterAlgorithms
             changeVisibility(false, false);
             isTriangleMode = false;
             isLineMode = false;
-            visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             /// Выбираем файл для заливки
             if (chooseFileDialog.ShowDialog() == DialogResult.OK)
@@ -121,249 +128,6 @@ namespace RasterAlgorithms
             }
         }
 
-        /* -------------------------- выделение границы -------------------------- */
-        private Bitmap image = null;
-        private Graphics g;
-        private Point p;
-
-        private LinkedList<Point> borderPixels; // граница изображения
-
-
-        // рисование кружочка
-        private void buttonCircle_Click(object sender, EventArgs e)
-        {
-            changeVisibility(false, false);
-            isDrawingMode = true;
-            isTriangleMode = false;
-            isLineMode = false;
-
-            canvas.Image = new Bitmap(1300, 900);
-            image = new Bitmap(1300, 900);
-            canvas.Image = image;
-
-            int width = 350, height = 350;
-            int x = (canvas.Width - width) / 2;
-            int y = (canvas.Height - height + 50) / 2;
-
-            g = Graphics.FromImage(canvas.Image);
-            //g.DrawEllipse(Pens.Pink, x, y, width, height);
-            g.FillEllipse(Brushes.Pink, x, y, width, height);
-
-            // сохраняем координаты для начала обхода по границе
-            p.X = x + width; 
-            p.Y = y + height / 2;
-
-            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
-        }
-
-        // рисование кружочка
-        private void buttonSquare_Click(object sender, EventArgs e)
-        {
-            changeVisibility(false, false);
-            isDrawingMode = true;
-            isTriangleMode = false;
-            isLineMode = false;
-
-            canvas.Image = new Bitmap(1300, 900);
-            image = new Bitmap(1300, 900);
-            canvas.Image = image;
-
-            int width = 350, height = 350;
-            int x = (canvas.Width - width) / 2;
-            int y = (canvas.Height - height + 50) / 2;
-
-            g = Graphics.FromImage(canvas.Image);
-            //g.DrawEllipse(Pens.Pink, x, y, width, height);
-            g.FillRectangle(Brushes.Pink, x, y, width, height);
-
-            // сохраняем координаты для начала обхода по границе
-            p.X = x + width;
-            p.Y = y + height / 2;
-
-            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
-        }
-
-        // рисование кружочка
-        private void buttonStar_Click(object sender, EventArgs e)
-        {
-            changeVisibility(false, false);
-            isDrawingMode = true;
-            isTriangleMode = false;
-            isLineMode = false;
-
-            canvas.Image = new Bitmap(1300, 900);
-            image = new Bitmap(1300, 900);
-            canvas.Image = image;
-
-            int n = 5;               // число вершин
-            double R = 200, r = 100;   // радиусы
-            double alpha = 0;        // поворот
-            double x0 = canvas.Width / 2, y0 = canvas.Height / 2; // центр
-
-            PointF[] points = new PointF[2 * n + 1];
-            double a = alpha, da = Math.PI / n, l;
-            for (int k = 0; k < 2 * n + 1; k++)
-            {
-                l = k % 2 == 0 ? r : R;
-                points[k] = new PointF((float)(x0 + l * Math.Cos(a)), (float)(y0 + l * Math.Sin(a)));
-                a += da;
-            }
-            g = Graphics.FromImage(canvas.Image);
-            g.FillPolygon(new System.Drawing.SolidBrush(Color.Pink), points);
-
-            // сохраняем координаты для начала обхода по границе
-            p.X = (int)points[0].X;
-            p.Y = (int)points[0].Y;
-
-            //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
-        }
-
-        // открывает панель с рисованием границы и выбором фигуры
-        private void buttonBorders_Click(object sender, EventArgs e)
-        { 
-            visibleBorderButtons(true);
-        }
-
-        // видимость/невидимость панели с границей
-        private void visibleBorderButtons(bool flag)
-        {
-            if (flag)
-            {
-                buttonHighlight.Visible = true;
-                buttonCircle.Visible = true;
-                buttonSquare.Visible = true;
-                buttonStar.Visible = true;
-            }
-            else
-            {
-                buttonHighlight.Visible = false;
-                buttonCircle.Visible = false;
-                buttonSquare.Visible = false;
-                buttonStar.Visible = false;
-            }
-        }
-
-        // получить координаты следующего пикселя по направлению
-        // 3 2 1
-        // 4 x 0
-        // 5 6 7
-        private Point nextPixel(int x, int y, int step)
-        {
-            switch (step)
-            {
-                case 0:
-                    return new Point(x + 1, y);
-                case 1:
-                    return new Point(x + 1, y - 1);
-                case 2:
-                    return new Point(x, y - 1);
-                case 3:
-                    return new Point(x - 1, y - 1);
-                case 4:
-                    return new Point(x - 1, y);
-                case 5:
-                    return new Point(x - 1, y + 1);
-                case 6:
-                    return new Point(x, y + 1);
-                case 7:
-                    return new Point(x + 1, y + 1);
-                default:
-                    return new Point(x, y);
-            }
-        }
-
-        // получание следующего пикселя границы
-        // 3 2 1
-        // 4 x 0
-        // 5 6 7
-        private void GetBorder(int x, int y)
-        {
-            Color colorOfBorder; // цвет крайних пикселей(начальной границы) изображения
-            Point point; // текущий пиксель
-            int count = 0; // проверка на выход из алгоритма
-            int directionOfStep = 6; // направление для поиска нужного пикселя
-
-            borderPixels = new LinkedList<Point>(); // крайние граничные пиксели изображения - будущая обрисованная граница
-            borderPixels.AddLast(new Point(x, y));
-
-            using (var fimage = new FastBitmap(image))
-            {
-                colorOfBorder = fimage.GetPixel(new Point(x, y));
-
-                /* В самый первый раз обход начинаем вниз. Проверяем, закрашена
-                   ли точка цветом границы. Если нет, то поиск закрашенной цветом
-                   границы точки продолжаем против часовой стрелки. */
-                point = nextPixel(x, y, directionOfStep); // первый раз идем вниз
-                if (fimage.GetPixel(new Point(point.X, point.Y)) == colorOfBorder) // если первый внизу пиксель - тоже граница
-                {
-                    y += 1;
-                    directionOfStep = 4;
-                    borderPixels.AddLast(new Point(x, y));
-                }
-                else // если не граница, то поиск закрашенной цветом границы точки продолжается против часовой стрелки
-                {
-                    point = nextPixel(x, y, directionOfStep);
-                    while (fimage.GetPixel(new Point(point.X, point.Y)) != colorOfBorder)
-                    {
-                        directionOfStep = (directionOfStep + 1) % 8; // движение против часовой
-                        point = nextPixel(x, y, directionOfStep);
-                    }
-
-                    x = point.X;
-                    y = point.Y;
-                    borderPixels.AddLast(new Point(x, y));
-
-                    directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли                   
-                }
-
-
-                /* В список заносим, сохраняя упорядоченность по y, если же y-ки
-                   имеют одинаковые значения, то по x. Выбор следующей точки
-                   (i+1)-ой, где i>1, на 90 градусов по часовой стрелке от того
-                   направления, по которому мы туда пришли. */
-                while ((x != p.X || y != p.Y || directionOfStep != 6) && count != fimage.Width * fimage.Height) // пока не вернемся на стартовую позицию
-                {
-                    point = nextPixel(x, y, directionOfStep);
-                    if (fimage.GetPixel(new Point(point.X, point.Y)) == colorOfBorder) // если текущий пиксель - граница
-                    {
-                        x = point.X;
-                        y = point.Y;
-                        borderPixels.AddLast(new Point(x, y));
-
-                        directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли   
-                    }
-                    else
-                    {
-                        point = nextPixel(x, y, directionOfStep);
-                        while (fimage.GetPixel(new Point(point.X, point.Y)) != colorOfBorder)
-                        {
-                            directionOfStep = (directionOfStep + 1) % 8; // движение против часовой
-                            point = nextPixel(x, y, directionOfStep);
-                        }
-
-                        x = point.X;
-                        y = point.Y;
-                        borderPixels.AddLast(new Point(x, y));
-
-                        directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли   
-                    }
-
-                    count++;
-                }
-            }
-        }
-
-        // рисование границы по полученным с помощью GetBorder пикселям из borderPixels
-        private void DrawBorder()
-        {
-            using (var fimage = new FastBitmap(image))
-            {
-                foreach (Point pixel in borderPixels)
-                    fimage.SetPixel(new Point(pixel.X, pixel.Y), Color.Black);
-            }
-            canvas.Image = image;
-        }
-
         /// <summary>
         /// Выделяем границы
         /// </summary>
@@ -371,8 +135,16 @@ namespace RasterAlgorithms
         /// <param name="e"></param>
         private void buttonHighlight_Click(object sender, EventArgs e)
         {
-            GetBorder(p.X, p.Y);
-            DrawBorder();
+            changeVisibility(false, false);
+            isDrawingMode = false;
+            isTriangleMode = false;
+            isLineMode = false;
+            canvas.Image = new Bitmap(1300, 900);
+
+            if (chooseFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                currentFileName = chooseFileDialog.FileName;
+            }
         }
 
         private bool isLineMode = false;
@@ -387,7 +159,7 @@ namespace RasterAlgorithms
             changeVisibility(true, false);
             isDrawingMode = false;
             isTriangleMode = false;
-            visibleBorderButtons(false);
+
             canvas.Image = new Bitmap(1300, 900);
             /// Алгоритм по умолчанию
             comboBoxLine.SelectedIndex = 0;
@@ -417,7 +189,6 @@ namespace RasterAlgorithms
             changeVisibility(false, true);
             isDrawingMode = false;
             isLineMode = false;
-            visibleBorderButtons(false);
             canvas.Image = new Bitmap(1300, 900);
             color1.BackColor = Color.Red;
             color2.BackColor = Color.FromArgb(0,255,0);
@@ -448,8 +219,9 @@ namespace RasterAlgorithms
             {
                 color3.BackColor = colorDialog.Color;
             }
-        }
-
+        } 
+        Color oldcolor;
+       
         private void canvas_MouseClick(object sender, MouseEventArgs e)
         {
             if (isTriangleMode)
@@ -470,7 +242,8 @@ namespace RasterAlgorithms
                     drawTriangle();
                     vertices.Clear();
                 }
-            } else if (isLineMode)
+            }
+            else if (isLineMode)
             {
                 if (prevPoint == null)
                 {
@@ -488,10 +261,205 @@ namespace RasterAlgorithms
                     }
                     prevPoint = null;
                 }
+
+            }
+            else if (isFillingMode)
+            {
+                //FillFigure(e.Location, currentColorFill);
+                oldcolor = ((Bitmap)canvas.Image).GetPixel(e.X, e.Y);
+                p.Color = currentColorFill;
+                   if (oldcolor!=currentColorFill)//вызываем заливку
+                    fillfigure(e.X,e.Y);
+            }
+             else if (isDrawingMode)
+            {
+                FillImage(e.Location, currentFileName);//вызываем заливку картинкой
             }
         }
+        /* private void getMousecoord(Point p,Color c)
+{
+var bitmap = new Bitmap(canvas.Image);
+//Point p = new Point(e.X, e.Y);
+// currentColorFill = colorDialog.Color;
+FillFigure( p, c);
+canvas.Image = bitmap;
+}*/
 
-        private float frac(double f)
+        private bool CheckPixel(Color cur, Color c2)
+        {
+            if (cur != c2)
+                return true;
+            else return false;
+        }
+        void fillfigure(int x, int y)
+        {
+            Bitmap bitmap = canvas.Image as Bitmap;
+            Color currentColor = bitmap.GetPixel(x, y);
+            if (CheckPixel(currentColor,oldcolor )|| currentColor == p.Color)//&& currentColor==Color.Black
+                return;
+            
+            int leftgr =x;//левая граница
+            int rightgr =x;//правая граница
+            
+            while (( bitmap.GetPixel(leftgr, y) == oldcolor) &&(leftgr >= 0))//==oldcolor
+            {
+                leftgr--;
+            }
+
+           
+            while (( bitmap.GetPixel(rightgr, y) == oldcolor)&&(rightgr <= canvas.Width))//bitmap
+            {
+                rightgr++;
+            }
+            // using (Graphics g = Graphics.FromImage(canvas.Image))
+            // {
+            //g.DrawLine(p, leftgr + 1, y, rightgr - 1, y);//c drawline почему-то иногда происходит stackOverflow при получении
+            //координаты точки, где кликнули мышкой
+            //}
+            
+            if (leftgr + 1 == rightgr - 1)
+            {
+                bitmap.SetPixel(leftgr + 1, y, currentColorFill);
+             
+            }
+            else {
+                for (int i = leftgr + 1; i < rightgr; i++)
+                {
+
+                    // fbitmap.SetPixel(new Point(i, y), currentColorFill);
+                    bitmap.SetPixel(i, y, currentColorFill);//а вот с setpixel норм
+                }
+            }
+            canvas.Invalidate();
+
+            if (y + 1 <= bitmap.Height)
+                for (int i = leftgr + 1; i < rightgr; ++i)
+                    fillfigure(i, y + 1);
+
+            if (y - 1 >= 0)
+                for (int i = leftgr + 1; i < rightgr; ++i)
+                    fillfigure(i, y - 1);
+
+           //
+            //canvas.Image = bitmap;
+         
+        }
+        /*private void FillFigure(Point p, Color c)
+        { 
+            var bitmap = new Bitmap(canvas.Image);
+            int x = p.X;
+            int leftgr = p.X;//левая граница
+            int rightgr = p.X;//правая граница
+            int y = p.Y;
+            Color fillcolor = c;
+            Bitmap bitmap1 = canvas.Image as Bitmap;
+          //  using (FastBitmap fbitmap = new FastBitmap(bitmap))
+            {
+                //Color currentcolor = fbitmap.GetPixel(p);
+                Color currentcolor = bitmap1.GetPixel(x,y);
+                if ((currentcolor.A != c.A) && (currentcolor.R != c.R) && (currentcolor.G != c.G) && (currentcolor.B != c.B))
+                    return;
+                if (x > bitmap1.Size.Width)
+                    return;
+                if (y > bitmap1.Size.Height)
+                    return;
+              //  {
+                    while (!(currentcolor.A == 0) && !(currentcolor.R == 0) && !(currentcolor.G == 0) && !(currentcolor.B == 0)&& (rightgr <= bitmap1.Size.Width))
+                    {
+                        // currentcolor = fbitmap.GetPixel(new Point(rightgr, y));
+                       // if (rightgr <= bitmap1.Width)
+                       // {
+                            rightgr++;
+                            currentcolor = bitmap1.GetPixel(rightgr, y);
+                       // }
+                       // else break;
+                    }
+                    //currentcolor = fbitmap.GetPixel(p);
+                    currentcolor = bitmap1.GetPixel(x, y);
+                    while (!(currentcolor.A == 0)&&!(currentcolor.R == 0) && !(currentcolor.G == 0) && !(currentcolor.B == 0)&& (leftgr >= 0))
+                    {
+                       // if (leftgr >= 0)
+                       // {
+                            leftgr--;
+                            //currentcolor = fbitmap.GetPixel(new Point(leftgr, y));
+                            currentcolor = bitmap1.GetPixel(leftgr, y);
+                       // }
+                        //else break;
+                    }
+                    for (int i = leftgr + 1; i < rightgr; i++)
+                    {
+                        //fbitmap.SetPixel(new Point(i, y), currentColorFill);
+                        bitmap1.SetPixel(i, y, currentColorFill);
+                    }
+                    if ((y + 1 < bitmap1.Size.Height) )
+                        for (int i = leftgr + 1; i < rightgr; i++)
+                        {
+                        //fbitmap.SetPixel(new Point(i, y+1), fillcolor);
+                        Color col = bitmap1.GetPixel(i, y + 1);
+                        if (col!=currentColorFill)
+                            FillFigure(new Point(i, y + 1), fillcolor);
+                        }
+                    
+                    if (y-1>0)
+                    for (int i = leftgr; i < rightgr; i++)
+                    {
+                    //fbitmap.SetPixel(new Point(i, y-1), fillcolor);
+                    FillFigure(new Point(i, y - 1), fillcolor);
+                    }
+               // }
+            }
+            //canvas.Image = bitmap;
+            canvas.Image = bitmap1;
+        }*/
+        private void FillImage(Point p, string filename)
+        {
+            Image newImage = Image.FromFile(filename);
+          
+            Bitmap bitmap = canvas.Image as Bitmap;
+            Bitmap imbitmap = newImage as Bitmap;
+            int rightgr = p.X;
+            int downgr = p.Y;
+            Color currentColor = bitmap.GetPixel(p.X,p.Y);
+            while ((rightgr <= bitmap.Size.Width))//!(currentColor==Color.Black)
+            {
+
+                // currentcolor = fbitmap.GetPixel(new Point(rightgr, y));
+                // if (rightgr <= bitmap1.Width)
+                // {
+                rightgr++;
+                currentColor = bitmap.GetPixel(rightgr, p.Y);
+                // }
+                // else break;
+            }
+            //currentcolor = fbitmap.GetPixel(p);
+            while (  (downgr <= bitmap.Size.Height))//!(currentColor == Color.Black)
+            {
+
+                // currentcolor = fbitmap.GetPixel(new Point(rightgr, y));
+                // if (rightgr <= bitmap1.Width)
+                // {
+                downgr++;
+                currentColor = bitmap.GetPixel(p.X, downgr);
+                // }
+                // else break;
+            }
+
+            using (FastBitmap fbitmap = new FastBitmap(bitmap))
+            {
+                int i1 = 0;
+                int j1 = 0;
+                for (int i = p.X; i < rightgr; i++)
+                    for (int j = p.Y; j < downgr; j++)
+                    {
+                        Color c = imbitmap.GetPixel(i1, j1);
+                        fbitmap.SetPixel(new Point(i, j), c);
+                        i1++;
+                        j1++;
+                    }
+            }
+            canvas.Image = bitmap;
+        }
+            private float frac(double f)
         {
             return (float)(f - Math.Truncate(f));
         }
@@ -743,7 +711,6 @@ namespace RasterAlgorithms
                         fbitmap.SetPixel(new Point(110 + j, 200 + i), c2[i]);
                     }
                 }
-
                 for (int i = 0; i < c3.Length; i++)
                 {
                     for (int j = 0; j < 7; j++)

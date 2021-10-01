@@ -19,6 +19,7 @@ namespace RasterAlgorithms
         bool isDrawingMode = false;
         bool isFillingMode = false;
         Bitmap bcanvas;
+        private Bitmap image1 = null;
          Pen p;
 
        // private Graphics g;
@@ -57,6 +58,7 @@ namespace RasterAlgorithms
             isDrawingMode = false;
             isTriangleMode = false;
             isLineMode = false;
+            isFillingMode = true;
             visibleBorderButtons(false);
             /// Выбираем цвет
             if (colorDialog.ShowDialog() == DialogResult.OK)
@@ -65,6 +67,25 @@ namespace RasterAlgorithms
             }
             /// Устанавливаем картинку для заливки
             canvas.Image = Properties.Resources.back;
+            canvas.Image = new Bitmap(1300, 900);
+            image1 = new Bitmap(1300, 900);
+            canvas.Image = image1;
+            int width = 350, height = 350;
+            int x = (canvas.Width - width) / 2;
+            int y = (canvas.Height - height + 50) / 2;
+            g = Graphics.FromImage(canvas.Image);
+            //g.DrawEllipse(Pens.Pink, x, y, width, height);
+            g.DrawEllipse(new Pen(Color.Black), x, y, width, height);
+
+            g.DrawRectangle(new Pen(Color.Black), 100, 400, 100, 50);
+            PointF p1 = new PointF(150, 20);
+            PointF p2 = new PointF(60, 30);
+            PointF p3 = new PointF(80, 90);
+            PointF[] curvePoints ={
+                 p1,
+                 p2,
+                 p3 };
+            g.DrawPolygon(new Pen(Color.Black),curvePoints);
         }
 
         /// <summary>
@@ -85,6 +106,7 @@ namespace RasterAlgorithms
                 currentFileName = chooseFileDialog.FileName;
             }
             isDrawingMode = true;
+            
             /// Используем обычный битмап для рисования
         }
 
@@ -510,7 +532,11 @@ namespace RasterAlgorithms
             }
              else if (isDrawingMode)
             {
-                FillImage(e.Location, currentFileName);//вызываем заливку картинкой
+                //FillImage(e.Location, currentFileName);//вызываем заливку картинкой
+                oldcolor = ((Bitmap)canvas.Image).GetPixel(e.X, e.Y);
+                p.Color = currentColorFill;
+                if (oldcolor != currentColorFill)//вызываем заливку
+                    fillfigure(e.X, e.Y);
             }
         }
         /* private void getMousecoord(Point p,Color c)
@@ -532,7 +558,7 @@ canvas.Image = bitmap;
         {
             Bitmap bitmap = canvas.Image as Bitmap;
             Color currentColor = bitmap.GetPixel(x, y);
-            if (CheckPixel(currentColor,oldcolor )|| currentColor == p.Color)//&& currentColor==Color.Black
+            if (CheckPixel(currentColor,oldcolor )|| currentColor == currentColorFill)//&& currentColor==Color.Black
                 return;
             
             int leftgr =x;//левая граница
@@ -569,11 +595,11 @@ canvas.Image = bitmap;
             }
             canvas.Invalidate();
 
-            if (y + 1 <= bitmap.Height)
+            if (y + 1 < bitmap.Height)
                 for (int i = leftgr + 1; i < rightgr; ++i)
                     fillfigure(i, y + 1);
 
-            if (y - 1 >= 0)
+            if (y - 1 > 0)
                 for (int i = leftgr + 1; i < rightgr; ++i)
                     fillfigure(i, y - 1);
 

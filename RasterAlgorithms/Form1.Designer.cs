@@ -45,6 +45,7 @@ namespace RasterAlgorithms
             this.buttonBorders = new System.Windows.Forms.Button();
             this.buttonSquare = new System.Windows.Forms.Button();
             this.buttonStar = new System.Windows.Forms.Button();
+            this.Image_button = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.color1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.color2)).BeginInit();
@@ -56,9 +57,9 @@ namespace RasterAlgorithms
             this.canvas.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.canvas.Location = new System.Drawing.Point(0, 0);
-            this.canvas.Margin = new System.Windows.Forms.Padding(2);
+            this.canvas.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.canvas.Name = "canvas";
-            this.canvas.Size = new System.Drawing.Size(910, 540);
+            this.canvas.Size = new System.Drawing.Size(1040, 720);
             this.canvas.TabIndex = 0;
             this.canvas.TabStop = false;
             this.canvas.MouseClick += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseClick);
@@ -68,10 +69,10 @@ namespace RasterAlgorithms
             // 
             // buttonFillColor
             // 
-            this.buttonFillColor.Location = new System.Drawing.Point(101, 25);
-            this.buttonFillColor.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonFillColor.Location = new System.Drawing.Point(115, 33);
+            this.buttonFillColor.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonFillColor.Name = "buttonFillColor";
-            this.buttonFillColor.Size = new System.Drawing.Size(116, 26);
+            this.buttonFillColor.Size = new System.Drawing.Size(133, 35);
             this.buttonFillColor.TabIndex = 1;
             this.buttonFillColor.Text = "Залить цветом";
             this.buttonFillColor.UseVisualStyleBackColor = true;
@@ -79,10 +80,10 @@ namespace RasterAlgorithms
             // 
             // buttonFillImage
             // 
-            this.buttonFillImage.Location = new System.Drawing.Point(221, 25);
-            this.buttonFillImage.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonFillImage.Location = new System.Drawing.Point(253, 33);
+            this.buttonFillImage.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonFillImage.Name = "buttonFillImage";
-            this.buttonFillImage.Size = new System.Drawing.Size(130, 26);
+            this.buttonFillImage.Size = new System.Drawing.Size(149, 35);
             this.buttonFillImage.TabIndex = 1;
             this.buttonFillImage.Text = "Залить картинкой";
             this.buttonFillImage.UseVisualStyleBackColor = true;
@@ -90,10 +91,10 @@ namespace RasterAlgorithms
             // 
             // buttonHighlight
             // 
-            this.buttonHighlight.Location = new System.Drawing.Point(11, 178);
-            this.buttonHighlight.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonHighlight.Location = new System.Drawing.Point(13, 237);
+            this.buttonHighlight.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonHighlight.Name = "buttonHighlight";
-            this.buttonHighlight.Size = new System.Drawing.Size(136, 26);
+            this.buttonHighlight.Size = new System.Drawing.Size(155, 35);
             this.buttonHighlight.TabIndex = 1;
             this.buttonHighlight.Text = "Выделить границу";
             this.buttonHighlight.UseVisualStyleBackColor = true;
@@ -102,10 +103,10 @@ namespace RasterAlgorithms
             // 
             // buttonLine
             // 
-            this.buttonLine.Location = new System.Drawing.Point(496, 25);
-            this.buttonLine.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonLine.Location = new System.Drawing.Point(567, 33);
+            this.buttonLine.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonLine.Name = "buttonLine";
-            this.buttonLine.Size = new System.Drawing.Size(141, 26);
+            this.buttonLine.Size = new System.Drawing.Size(161, 35);
             this.buttonLine.TabIndex = 1;
             this.buttonLine.Text = "Нарисовать отрезок";
             this.buttonLine.UseVisualStyleBackColor = true;
@@ -113,10 +114,10 @@ namespace RasterAlgorithms
             // 
             // buttonTriangle
             // 
-            this.buttonTriangle.Location = new System.Drawing.Point(641, 25);
-            this.buttonTriangle.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonTriangle.Location = new System.Drawing.Point(733, 33);
+            this.buttonTriangle.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonTriangle.Name = "buttonTriangle";
-            this.buttonTriangle.Size = new System.Drawing.Size(169, 26);
+            this.buttonTriangle.Size = new System.Drawing.Size(193, 35);
             this.buttonTriangle.TabIndex = 1;
             this.buttonTriangle.Text = "Градиентный треугольник";
             this.buttonTriangle.UseVisualStyleBackColor = true;
@@ -136,10 +137,10 @@ namespace RasterAlgorithms
             this.comboBoxLine.Items.AddRange(new object[] {
             "алгоритм Брезенхема",
             "алгоритм Ву"});
-            this.comboBoxLine.Location = new System.Drawing.Point(496, 55);
-            this.comboBoxLine.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBoxLine.Location = new System.Drawing.Point(567, 73);
+            this.comboBoxLine.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.comboBoxLine.Name = "comboBoxLine";
-            this.comboBoxLine.Size = new System.Drawing.Size(142, 23);
+            this.comboBoxLine.Size = new System.Drawing.Size(162, 28);
             this.comboBoxLine.TabIndex = 2;
             this.comboBoxLine.Text = "алгоритм Брезенхема";
             this.comboBoxLine.Visible = false;
@@ -148,10 +149,10 @@ namespace RasterAlgorithms
             // color1
             // 
             this.color1.BackColor = System.Drawing.Color.Red;
-            this.color1.Location = new System.Drawing.Point(688, 55);
-            this.color1.Margin = new System.Windows.Forms.Padding(2);
+            this.color1.Location = new System.Drawing.Point(786, 73);
+            this.color1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.color1.Name = "color1";
-            this.color1.Size = new System.Drawing.Size(23, 20);
+            this.color1.Size = new System.Drawing.Size(26, 27);
             this.color1.TabIndex = 3;
             this.color1.TabStop = false;
             this.color1.Visible = false;
@@ -160,10 +161,10 @@ namespace RasterAlgorithms
             // color2
             // 
             this.color2.BackColor = System.Drawing.Color.Green;
-            this.color2.Location = new System.Drawing.Point(715, 55);
-            this.color2.Margin = new System.Windows.Forms.Padding(2);
+            this.color2.Location = new System.Drawing.Point(817, 73);
+            this.color2.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.color2.Name = "color2";
-            this.color2.Size = new System.Drawing.Size(23, 20);
+            this.color2.Size = new System.Drawing.Size(26, 27);
             this.color2.TabIndex = 3;
             this.color2.TabStop = false;
             this.color2.Visible = false;
@@ -172,10 +173,10 @@ namespace RasterAlgorithms
             // color3
             // 
             this.color3.BackColor = System.Drawing.Color.Blue;
-            this.color3.Location = new System.Drawing.Point(743, 55);
-            this.color3.Margin = new System.Windows.Forms.Padding(2);
+            this.color3.Location = new System.Drawing.Point(849, 73);
+            this.color3.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.color3.Name = "color3";
-            this.color3.Size = new System.Drawing.Size(23, 20);
+            this.color3.Size = new System.Drawing.Size(26, 27);
             this.color3.TabIndex = 3;
             this.color3.TabStop = false;
             this.color3.Visible = false;
@@ -183,10 +184,10 @@ namespace RasterAlgorithms
             // 
             // buttonCircle
             // 
-            this.buttonCircle.Location = new System.Drawing.Point(11, 75);
-            this.buttonCircle.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonCircle.Location = new System.Drawing.Point(13, 100);
+            this.buttonCircle.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonCircle.Name = "buttonCircle";
-            this.buttonCircle.Size = new System.Drawing.Size(136, 26);
+            this.buttonCircle.Size = new System.Drawing.Size(155, 35);
             this.buttonCircle.TabIndex = 4;
             this.buttonCircle.Text = "Нарисовать круг";
             this.buttonCircle.UseVisualStyleBackColor = true;
@@ -195,10 +196,10 @@ namespace RasterAlgorithms
             // 
             // buttonBorders
             // 
-            this.buttonBorders.Location = new System.Drawing.Point(355, 25);
-            this.buttonBorders.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonBorders.Location = new System.Drawing.Point(406, 33);
+            this.buttonBorders.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonBorders.Name = "buttonBorders";
-            this.buttonBorders.Size = new System.Drawing.Size(136, 26);
+            this.buttonBorders.Size = new System.Drawing.Size(155, 35);
             this.buttonBorders.TabIndex = 5;
             this.buttonBorders.Text = "Граница";
             this.buttonBorders.UseVisualStyleBackColor = true;
@@ -206,10 +207,10 @@ namespace RasterAlgorithms
             // 
             // buttonSquare
             // 
-            this.buttonSquare.Location = new System.Drawing.Point(11, 105);
-            this.buttonSquare.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonSquare.Location = new System.Drawing.Point(13, 140);
+            this.buttonSquare.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonSquare.Name = "buttonSquare";
-            this.buttonSquare.Size = new System.Drawing.Size(136, 26);
+            this.buttonSquare.Size = new System.Drawing.Size(155, 35);
             this.buttonSquare.TabIndex = 6;
             this.buttonSquare.Text = "Нарисовать квадрат";
             this.buttonSquare.UseVisualStyleBackColor = true;
@@ -218,22 +219,35 @@ namespace RasterAlgorithms
             // 
             // buttonStar
             // 
-            this.buttonStar.Location = new System.Drawing.Point(11, 135);
-            this.buttonStar.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonStar.Location = new System.Drawing.Point(13, 180);
+            this.buttonStar.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonStar.Name = "buttonStar";
-            this.buttonStar.Size = new System.Drawing.Size(136, 26);
+            this.buttonStar.Size = new System.Drawing.Size(155, 35);
             this.buttonStar.TabIndex = 7;
             this.buttonStar.Text = "Нарисовать звезду";
             this.buttonStar.UseVisualStyleBackColor = true;
             this.buttonStar.Visible = false;
             this.buttonStar.Click += new System.EventHandler(this.buttonStar_Click);
             // 
+            // Image_button
+            // 
+            this.Image_button.AutoSize = true;
+            this.Image_button.Location = new System.Drawing.Point(13, 295);
+            this.Image_button.Name = "Image_button";
+            this.Image_button.Size = new System.Drawing.Size(171, 31);
+            this.Image_button.TabIndex = 8;
+            this.Image_button.Text = "Закончить рисование";
+            this.Image_button.UseVisualStyleBackColor = true;
+            this.Image_button.Visible = false;
+            this.Image_button.Click += new System.EventHandler(this.Image_button_Click);
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(910, 540);
+            this.ClientSize = new System.Drawing.Size(1040, 720);
+            this.Controls.Add(this.Image_button);
             this.Controls.Add(this.buttonStar);
             this.Controls.Add(this.buttonSquare);
             this.Controls.Add(this.buttonBorders);
@@ -249,7 +263,7 @@ namespace RasterAlgorithms
             this.Controls.Add(this.buttonFillColor);
             this.Controls.Add(this.canvas);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.Name = "Form1";
             this.Text = "Пэинт (на минималках)";
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
@@ -257,6 +271,7 @@ namespace RasterAlgorithms
             ((System.ComponentModel.ISupportInitialize)(this.color2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.color3)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -278,6 +293,7 @@ namespace RasterAlgorithms
         private System.Windows.Forms.Button buttonBorders;
         private System.Windows.Forms.Button buttonSquare;
         private System.Windows.Forms.Button buttonStar;
+        private System.Windows.Forms.Button Image_button;
     }
 }
 

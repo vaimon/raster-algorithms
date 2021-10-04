@@ -743,9 +743,9 @@ canvas.Image = bitmap;
                 //j = 0;
                 while ((bitmap.GetPixel(x, y) == oldcolor) && (x <= canvas.Width))//bitmap
                 {
-                    if (j == imbitmap.Height)//для того, чтобы картиночка зацикливалась
-                    j = 0;
-                     if (i == imbitmap.Width)
+                    //if (j == imbitmap.Height-1)//для того, чтобы картиночка зацикливалась
+                    //j = 0;
+                     if (i == imbitmap.Width-1)
                      i = 0;
                     Color c = imbitmap.GetPixel(i, j);
                     bitmap.SetPixel(x, y, c);
@@ -761,9 +761,9 @@ canvas.Image = bitmap;
                // j = imbitmap.Height;
                 while ((bitmap.GetPixel(x, y) == oldcolor) && (x <= canvas.Width))//bitmap
                 {
-                    if (j == imbitmap.Height)//для того, чтобы картиночка зацикливалась
-                    j = 0;
-                     if (i == imbitmap.Width)
+                   // if (j == imbitmap.Height-1)//для того, чтобы картиночка зацикливалась
+                   // j = 0;
+                     if (i == imbitmap.Width-1)
                      i = 0;
                     Color c = imbitmap.GetPixel(i, j);
                     bitmap.SetPixel(x, y, c);
@@ -779,10 +779,10 @@ canvas.Image = bitmap;
                 // j = 0;
                 while ((bitmap.GetPixel(x, y) == oldcolor)&& (x > 0))//bitmap
                 {
-                    if (j == imbitmap.Height)//для того, чтобы картиночка зацикливалась
-                    j = 0;
-                     if (i == imbitmap.Width)
-                     i = 0;
+                   // if (j == imbitmap.Height-1)//для того, чтобы картиночка зацикливалась
+                   // j = 0;
+                     if (i == 0 )
+                     i = imbitmap.Width - 1;
                     Color c = imbitmap.GetPixel(i, j);
                     bitmap.SetPixel(x, y, c);
                     x--;
@@ -797,10 +797,10 @@ canvas.Image = bitmap;
                 // j = imbitmap.Height;
                 while ((bitmap.GetPixel(x, y) ==oldcolor) && (x > 0))//bitmap
                 {
-                    if (j == imbitmap.Height )//для того, чтобы картиночка зацикливалась
-                    j = 0;
-                     if (i == imbitmap.Width )
-                     i = 0;
+                    //if (j == imbitmap.Height-1 )//для того, чтобы картиночка зацикливалась
+                    //j = 0;
+                     if (i ==  0)
+                     i = imbitmap.Width-1;
                     Color c = imbitmap.GetPixel(i, j);
                     bitmap.SetPixel(x, y, c);
                     x--;
@@ -848,21 +848,30 @@ canvas.Image = bitmap;
             int j4 = imbitmap.Height-1;
             for (int j = p.Y; j < downgr; j++)
             {
+                if (j1 == imbitmap.Height - 1)
+                    j1 = 0;
+
                 DrawLineFromPic(new Point(p.X,j),j1, filename,Corner.UL);
                 j1++;
             }
             for (int j = p.Y; j > upgr; j--)
             {
+                if (j2 == 0)
+                    j2 = imbitmap.Height-1;
                 DrawLineFromPic(new Point(p.X, j), j2, filename, Corner.DL);
                 j2--;
             }
             for (int j = p.Y; j <downgr; j++)
              {
-                 DrawLineFromPic(new Point(p.X-1, j), j3, filename, Corner.UR);
+                if (j3 == imbitmap.Height - 1)
+                    j3 = 0;
+                DrawLineFromPic(new Point(p.X-1, j), j3, filename, Corner.UR);
                  j3++;
             }
             for (int j = p.Y-1; j > upgr; j--)
             {
+                if (j4 == 0)
+                    j4 = imbitmap.Height - 1;
                 DrawLineFromPic(new Point(p.X-1, j), j4, filename, Corner.DR);
                 j4--;
             }

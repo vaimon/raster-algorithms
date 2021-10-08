@@ -26,7 +26,7 @@ namespace RasterAlgorithms
         public Form1()
         {
             var x = HSVTools.interpolate(Color.Red, Color.Blue, 10);
-        
+
            // canvas.Image = new Bitmap(canvas.Width, canvas.Height);
             p = new Pen(Color.Black, 1);
             InitializeComponent();
@@ -107,7 +107,7 @@ namespace RasterAlgorithms
                 currentFileName = chooseFileDialog.FileName;
             }
             isDrawingMode = true;
-            
+
             /// Используем обычный битмап для рисования
         }
 
@@ -145,7 +145,7 @@ namespace RasterAlgorithms
             {
                 using (Graphics g = Graphics.FromImage(canvas.Image))
                 {
-                    g.DrawLine(new Pen(Color.Black,2.0f), prev, e.Location);
+                    g.DrawLine(new Pen(Color.Black,4.0f), prev, e.Location);
                 }
                 canvas.Invalidate();
                 prev = e.Location;
@@ -181,7 +181,7 @@ namespace RasterAlgorithms
             g.FillEllipse(Brushes.Pink, x, y, width, height);
 
             // сохраняем координаты для начала обхода по границе
-            pp.X = x + width; 
+            pp.X = x + width;
             pp.Y = y + height / 2;
 
             //g.DrawEllipse(Pens.Black, p.X, p.Y, 5, 5); // проверка начала поиска границы
@@ -251,7 +251,7 @@ namespace RasterAlgorithms
 
         // открывает панель с рисованием границы и выбором фигуры
         private void buttonBorders_Click(object sender, EventArgs e)
-        { 
+        {
             visibleBorderButtons(true);
             isFillingMode = false;
             isDrawingMode = false;
@@ -349,7 +349,7 @@ namespace RasterAlgorithms
                     y = point.Y;
                     borderPixels.AddLast(new Point(x, y));
 
-                    directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли                   
+                    directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли
                 }
 
 
@@ -366,7 +366,7 @@ namespace RasterAlgorithms
                         y = point.Y;
                         borderPixels.AddLast(new Point(x, y));
 
-                        directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли   
+                        directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли
                     }
                     else
                     {
@@ -381,7 +381,7 @@ namespace RasterAlgorithms
                         y = point.Y;
                         borderPixels.AddLast(new Point(x, y));
 
-                        directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли   
+                        directionOfStep = (directionOfStep + 6) % 8; // на 90 градусов по часовой стрелке от того направления, по которому мы пришли
                     }
 
                     count++;
@@ -414,7 +414,7 @@ namespace RasterAlgorithms
         private bool isLineMode = false;
         private Point? prevPoint = null;
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -486,9 +486,9 @@ namespace RasterAlgorithms
             {
                 color3.BackColor = colorDialog.Color;
             }
-        } 
+        }
         Color oldcolor;
-       
+
         private void canvas_MouseClick(object sender, MouseEventArgs e)
         {
             if (isTriangleMode)
@@ -568,16 +568,16 @@ canvas.Image = bitmap;
             Color currentColor = bitmap.GetPixel(x, y);
             if (CheckPixel(currentColor,oldcolor )|| currentColor == currentColorFill)//&& currentColor==Color.Black
                 return;
-            
+
             int leftgr =x;//левая граница
             int rightgr =x;//правая граница
-            
+
             while (( bitmap.GetPixel(leftgr, y) == oldcolor) &&(leftgr >= 0))//==oldcolor
             {
                 leftgr--;
             }
 
-           
+
             while (( bitmap.GetPixel(rightgr, y) == oldcolor)&&(rightgr <= canvas.Width))//bitmap
             {
                 rightgr++;
@@ -587,11 +587,11 @@ canvas.Image = bitmap;
             //g.DrawLine(p, leftgr + 1, y, rightgr - 1, y);//c drawline почему-то иногда происходит stackOverflow при получении
             //координаты точки, где кликнули мышкой
             //}
-            
+
             if (leftgr + 1 == rightgr - 1)
             {
                 bitmap.SetPixel(leftgr + 1, y, currentColorFill);
-             
+
             }
             else {
                 for (int i = leftgr + 1; i < rightgr; i++)
@@ -613,10 +613,10 @@ canvas.Image = bitmap;
 
            //
             //canvas.Image = bitmap;
-         
+
         }
         /*private void FillFigure(Point p, Color c)
-        { 
+        {
             var bitmap = new Bitmap(canvas.Image);
             int x = p.X;
             int leftgr = p.X;//левая граница
@@ -670,7 +670,7 @@ canvas.Image = bitmap;
                         if (col!=currentColorFill)
                             FillFigure(new Point(i, y + 1), fillcolor);
                         }
-                    
+
                     if (y-1>0)
                     for (int i = leftgr; i < rightgr; i++)
                     {
@@ -685,7 +685,7 @@ canvas.Image = bitmap;
         private void FillImage(Point p, string filename)
         {
             Image newImage = Image.FromFile(filename);
-          
+
             Bitmap bitmap = canvas.Image as Bitmap;
             Bitmap imbitmap = newImage as Bitmap;
             int rightgr = p.X;
@@ -758,7 +758,7 @@ canvas.Image = bitmap;
                     (y0, y1) = (y1, y0);
                 }
                 fbitmap.SetPixel(p1, Color.Black);
-                
+
 
                 float dx = x1 - x0, dy = y1 - y0;
                 float gradient = dy / dx;
@@ -952,7 +952,7 @@ canvas.Image = bitmap;
         {
             vertices = vertices.OrderBy(x => x.Item1.Y).ToList();
             var bitmap = new Bitmap(canvas.Image);
-           
+
             using (FastBitmap fbitmap = new FastBitmap(bitmap))
             {
                 var e1 = getLineCoordsByBresenham(vertices[0].Item1, vertices[1].Item1).GroupBy(p => p.Y).Select(g => (vertices[0].Item1.X > vertices[1].Item1.X ? g.First() : g.Last())).ToArray();
@@ -1009,7 +1009,7 @@ canvas.Image = bitmap;
                         left = e2[i];
                         right = e1[i];
                     }
-                    
+
                     int cind = 0;
                     for(int x = left.X; x <= right.X; x++)
                     {

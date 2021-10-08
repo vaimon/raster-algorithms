@@ -1199,4 +1199,3 @@ canvas.Image = bitmap;
 
         
     }
-}
